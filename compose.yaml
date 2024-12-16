@@ -1,0 +1,58 @@
+services:
+  ws-conference:
+    build: ./ws-conference/Dockerfile
+    ports:
+      - "8081:8080"
+    volumes:
+      - ./ws-conference:/app
+
+  ws-keynote:
+    build: ./ws-keynote/Dockerfile
+    ports:
+      - "8082:8080"
+    volumes:
+      - ./ws-keynote:/app
+
+  gateway:
+    build: ./gateway/Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./gateway:/app
+
+  discovery:
+    build: ./discovery/Dockerfile
+    ports:
+      - "8761:8761"
+    volumes:
+      - ./discovery:/app
+
+  config:
+    build: ./config/Dockerfile
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./config:/app
+
+  front-app:
+    build: ./front-app/Dockerfile
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./front-app:/app
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    ports:
+      - "8083:8080"
+    environment:
+      DB_VENDOR: h2
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: admin
+      PROXY_ADDRESS_FORWARDING: "true"
+    command:
+      - start-dev
+    depends_on:
+      - discovery
+    volumes:
+      - keycloak_data:/opt/keycloak/data
